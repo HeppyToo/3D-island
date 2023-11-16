@@ -41,7 +41,6 @@ const Home = () => {
             intensity={1}
           />
 
-          <Sky />
           <Island
             position={islandPosition}
             scale={islandScale}
