@@ -1,6 +1,7 @@
-import { Routes, BrowserRouter as Router, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import { About, Contact, Home, Projects } from './pages/inedx';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+
+import { Footer, Navbar } from './components';
+import { About, Contact, Home, Projects } from './pages';
 
 const App = () => {
   return (
@@ -9,9 +10,19 @@ const App = () => {
         <Navbar />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/projects" element={<Projects />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route
+            path="/*"
+            element={
+              <>
+                <Routes>
+                  <Route path="/about" element={<About />} />
+                  <Route path="/projects" element={<Projects />} />
+                  <Route path="/contact" element={<Contact />} />
+                </Routes>
+                <Footer />
+              </>
+            }
+          />
         </Routes>
       </Router>
     </main>

@@ -1,35 +1,54 @@
 import { Canvas } from '@react-three/fiber';
-import { Suspense } from 'react';
-import Loader from '../components/Loader';
-import Island from '../models/Island';
+import { Suspense, useState } from 'react';
+
+import { HomeInfo, Loader } from '../components';
+import { Bird, Island, Plane, Sky } from '../models';
 
 const Home = () => {
+  const [currentStage, setCurrentStage] = useState(1);
+  const [isRotating, setIsRotating] = useState(false);
+  const [isPlayingMusic, setIsPlayingMusic] = useState(false);
+
+  const adjustPlaneForScreenSize = () => {
+    let screenScale, screenPosition;
+
+    // If screen width is less than 768px, adjust the scale and position
+    if (window.innerWidth < 768) {
+      screenScale = [1.5, 1.5, 1.5];
+      screenPosition = [0, -1.5, 0];
+    } else {
+      screenScale = [3, 3, 3];
+      screenPosition = [0, -4, -4];
+    }
+
+    return [screenScale, screenPosition];
+  };
+
   const adjustIslandForScreenSize = () => {
     let screenScale = null;
     let screenPosition = [0, -6.5, -43];
-    let rotation = [0.1, 4.7, 0];
 
     if (window.innerWidth < 768) {
       screenScale = [0.9, 0.9, 0.9];
-      screenPosition;
     } else {
-      screenScale = [0.9, 0.9, 0.9];
-      screenPosition = [0, -6.5, -43];
+      screenScale = [1, 1, 1];
     }
 
-    return [screenScale, screenPosition, rotation];
+    return [screenScale, screenPosition];
   };
 
-  const [islandScale, islandPosition, islandRotation] =
-    adjustIslandForScreenSize();
+  const [islandScale, islandPosition] = adjustIslandForScreenSize();
+  const [planeScene, planePosition] = adjustPlaneForScreenSize();
 
   return (
     <section className="w-full h-screen relative">
-      {/* <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
-        Popul
-      </div> */}
+      <div className="absolute top-28 left-0 right-0 z-10 flex items-center justify-center">
+        {currentStage && <HomeInfo currentStage={currentStage} />}
+      </div>
       <Canvas
-        className="w-full h-screen bg-transparent"
+        className={`w-full h-screen bg-transparent ${
+          isRotating ? 'cursor-grabbing' : 'cursor-grab'
+        }`}
         camera={{ near: 0.1, far: 1000 }}
       >
         <Suspense fallback={<Loader />}>
@@ -41,10 +60,21 @@ const Home = () => {
             intensity={1}
           />
 
+          <Bird />
+          <Sky isRotating={isRotating} />
           <Island
+            isRotating={isRotating}
+            setIsRotating={setIsRotating}
+            setCurrentStage={setCurrentStage}
             position={islandPosition}
+            rotation={[0.1, 4.7077, 0]}
             scale={islandScale}
-            rotation={islandRotation}
+          />
+          <Plane
+            isRotating={isRotating}
+            position={planePosition}
+            rotation={[0, 20, 0]}
+            scale={planeScene}
           />
         </Suspense>
       </Canvas>
